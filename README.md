@@ -2,7 +2,7 @@
 
 Clojure library to provide safety guard to your application.
 Some of the functionality is wrapper over
-[Failsafe](https://github.com/jhalterman/failsafe)., is itself a fork of
+[Failsafe](https://github.com/jhalterman/failsafe)., is itself a fork of [diehard](https://github.com/sunng87/diehard)
 
 Note that from 0.7 diehard-async uses Clojure 1.9 and spec.alpha for
 configuration validation. Clojure 1.8 users could stick with diehard-async
