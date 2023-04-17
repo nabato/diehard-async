@@ -1,29 +1,23 @@
-# diehard
-
-[![CI](https://github.com/sunng87/diehard/actions/workflows/clojure.yml/badge.svg)](https://github.com/sunng87/diehard/actions/workflows/clojure.yml)
-[![Clojars](https://img.shields.io/clojars/v/diehard.svg?maxAge=2592000)](https://clojars.org/diehard)
-[![license](https://img.shields.io/github/license/sunng87/diehard.svg?maxAge=2592000)]()
-[![Donate](https://img.shields.io/badge/donate-liberapay-yellow.svg)](https://liberapay.com/Sunng/donate)
-
+# diehard-async
 
 Clojure library to provide safety guard to your application.
 Some of the functionality is wrapper over
-[Failsafe](https://github.com/jhalterman/failsafe).
+[Failsafe](https://github.com/jhalterman/failsafe)., is itself a fork of
 
-Note that from 0.7 diehard uses Clojure 1.9 and spec.alpha for
-configuration validation. Clojure 1.8 users could stick with diehard
+Note that from 0.7 diehard-async uses Clojure 1.9 and spec.alpha for
+configuration validation. Clojure 1.8 users could stick with diehard-async
 `0.6.0`.
 
 ## Usage
 
-A quick example for diehard usage.
+A quick example for diehard-async usage.
 
 ### Retry block
 
 A retry block will re-execute inner forms when retry criteria matches.
 
 ```clojure
-(require '[diehard.core :as dh])
+(require '[diehard-async.core :as dh])
 (dh/with-retry {:retry-on TimeoutException
                 :max-retries 3}
   (fetch-data-from-the-moon))
@@ -35,13 +29,16 @@ A circuit breaker will track the execution of inner block and skip
 execution if the open condition triggered.
 
 ```clojure
-(require '[diehard.core :as dh])
+(require '[diehard-async.core :as dh])
 
 (defcircuitbreaker my-cb {:failure-threshold-ratio [8 10]
                           :delay-ms 1000})
 
 (dh/with-circuit-breaker my-cb
   (fetch-data-from-the-moon))
+
+  (dh/with-circuit-breaker {:circuitbreaker my-cb :async? true}
+    (fetch-data-from-the-moon-asynchronously))
 ```
 
 ### Rate limiter
@@ -51,7 +48,7 @@ second. It will block or throw exception depends on your
 configuration.
 
 ```clojure
-(require '[diehard.core :as dh])
+(require '[diehard-async.core :as dh])
 
 (defratelimiter my-rl {:rate 100})
 
@@ -64,7 +61,7 @@ configuration.
 Bulkhead allows you to limit concurrent execution on a code block.
 
 ```clojure
-(require '[diehard.core :as dh])
+(require '[diehard-async.core :as dh])
 
 ;; at most 10 threads can run the code block concurrently
 (defbulkhead my-bh {:concurrency 10})
@@ -78,13 +75,14 @@ Bulkhead allows you to limit concurrent execution on a code block.
 Timeouts allow you to fail an execution with `TimeoutExceededException` if it takes too long to complete
 
 ```clojure
-(require '[diehard.core :as dh])
+(require '[diehard-async.core :as dh])
 
 (with-timeout {:timeout-ms 5000}
   (fly-me-to-the-moon))
 ```
 
 ## Examples
+
 ### Retry block
 
 ```clojure
@@ -98,6 +96,7 @@ Timeouts allow you to fail an execution with `TimeoutExceededException` if it ta
 ```
 
 output:
+
 ```
 "failed attempt"
 "retrying..."
@@ -110,20 +109,3 @@ output:
 Execution error (ExceptionInfo) at main.user$eval27430$reify__27441/get (form-init6791465293873302710.clj:7).
 not good
 ```
-
-## Docs
-
-More options can be found in the documentation
-[from cljdoc](https://cljdoc.org/d/diehard/diehard/).
-
-## License
-
-Copyright © 2016-2019 Ning Sun
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
-
-## Donation
-
-I'm now accepting donation on [liberapay](https://liberapay.com/Sunng/donate),
-if you find my work helpful and want to keep it going.
