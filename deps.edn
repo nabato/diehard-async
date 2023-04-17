@@ -1,0 +1,30 @@
+{:deps {dev.failsafe/failsafe {:mvn/version "3.3.0"}
+        org.clojure/spec.alpha {:mvn/version "0.3.218"}
+        org.clojure/clojure {:mvn/version "1.11.1"}}
+ :paths ["src"]
+ :aliases {:test
+           {:extra-paths ["test"]
+            :extra-deps  {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+            :exec-fn     cognitect.test-runner.api/test
+            :main-opts ["-m" "cognitect.test-runner"]}
+
+           :dev {}
+
+           :codox
+           {:extra-deps {codox/codox {:mvn/version "0.10.8"}}
+            :exec-fn codox.main/generate-docs
+            :exec-args {:source-paths  ["src"]
+                        :source-uri "https://github.com/vlnabatov/diehard-async/blob/master/{filepath}#L{line}"
+                        :metadata {:doc/format :markdown}}}
+
+           :build
+           {:extra-deps {com.github.liquidz/build.edn {:git/tag "0.9.194" :git/sha "8e36200"}}
+            :ns-default build-edn.main
+            :exec-args {}}
+
+           :deploy
+           {:extra-deps {slipset/deps-deploy {:mvn/version "RELEASE"}}
+            :exec-fn deps-deploy.deps-deploy/deploy
+            :exec-args {:installer :remote
+                        :sign-releases? true
+                        :artifact "deps-deploy.jar"}}}}

@@ -1,0 +1,16 @@
+/target
+/classes
+/resources
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/.lein-*
+/.nrepl-port
+.hgignore
+.hg/
+.idea/
+*.iml
+.cpcache
+*~
+/settings.xml

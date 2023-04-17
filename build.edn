@@ -1,0 +1,3 @@
+{:lib org.clojars.nabatov/diehard-async
+ :version "0.1.0"
+ :deploy-repository {:id "clojars"}}
