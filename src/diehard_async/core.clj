@@ -1,4 +1,4 @@
-(ns diehard.core
+(ns diehard-async.core
   (:require [clojure.set :as set]
             [diehard-async.spec]
             [diehard-async.util :as u]
@@ -9,13 +9,13 @@
   (:import [java.time Duration Instant]
            [java.time.temporal ChronoUnit]
            [java.util List Optional]
-           [dev.failsafe Failsafe Fallback RetryPolicy FailsafeExecutor
+           [dev.failsafe AsyncExecution Failsafe Fallback RetryPolicy FailsafeExecutor
             ExecutionContext FailsafeException
             CircuitBreakerOpenException]
            [dev.failsafe.event ExecutionAttemptedEvent
             ExecutionCompletedEvent]
-           [dev.failsafe.function CheckedSupplier ContextualSupplier
-            CheckedFunction CheckedBiPredicate CheckedPredicate]))
+           [dev.failsafe.function AsyncRunnable AsyncSupplier CheckedSupplier ContextualSupplier
+                                  CheckedFunction CheckedBiPredicate CheckedPredicate]))
 
 (def ^:const ^:no-doc
   policy-allowed-keys #{:policy :circuit-breaker
@@ -450,8 +450,8 @@ You can always check circuit breaker state with
                  {:circuitbreaker ~cb}
                  ~cb)
          fallback# (fallback opts#)
-         async?# (:async? opts#)
          cb# (:circuitbreaker opts#)
+         async# (:async opts#)
 
          policies# (vec (filter some? [fallback# cb#]))
          failsafe# (Failsafe/with ^List policies#)
@@ -466,10 +466,16 @@ You can always check circuit breaker state with
 
          supplier# (reify CheckedSupplier
                      (get [_#]
-                       ~@body))]
+                       ~@body))
+         runnable# (reify AsyncRunnable
+                     (^void run [_# ^AsyncExecution execution#]
+                       (~@body execution#)))]
+
+
      (try
-       (if async?#
-         (.getAsync ^FailsafeExecutor failsafe# ^CheckedSupplier supplier#)
+       (condp = async#
+         :default (.getAsync ^FailsafeExecutor failsafe# ^CheckedSupplier supplier#)
+         :execution (.getAsyncExecution ^FailsafeExecutor failsafe# ^AsyncRunnable runnable#)
          (.get ^FailsafeExecutor failsafe# ^CheckedSupplier supplier#))
        (catch CircuitBreakerOpenException e#
          (throw e#))

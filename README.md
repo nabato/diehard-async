@@ -37,7 +37,7 @@ execution if the open condition triggered.
 (dh/with-circuit-breaker my-cb
   (fetch-data-from-the-moon))
 
-  (dh/with-circuit-breaker {:circuitbreaker my-cb :async? true}
+  (dh/with-circuit-breaker {:circuitbreaker my-cb :async :default}
     (fetch-data-from-the-moon-asynchronously))
 ```
 

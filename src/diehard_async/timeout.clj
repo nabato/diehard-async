@@ -1,5 +1,5 @@
 (ns diehard-async.timeout
-  (:require [diehard.util :as util])
+  (:require [diehard-async.util :as util])
   (:import [java.time Duration]
            [dev.failsafe Timeout]))
 
