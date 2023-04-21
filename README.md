@@ -39,6 +39,14 @@ execution if the open condition triggered.
 
   (dh/with-circuit-breaker {:circuitbreaker my-cb :async :default}
     (fetch-data-from-the-moon-asynchronously))
+
+(dh/with-circuit-breaker
+                {:circuitbreaker my-cb
+                 :async          :execution}
+                (fn [^AsyncExecution execution]
+                  (fetch-data-from-the-moon-asynchronously
+                           {:on-result         #(.recordResult execution %)
+                            :on-exception      #(.recordException execution %)})))
 ```
 
 ### Rate limiter
