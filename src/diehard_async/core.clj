@@ -208,11 +208,11 @@ You can put together all those retry policies in a `defretrypolicy`.
 And use `:policy` option in option map.
 
 ```clojure
-(diehard/defretrypolicy policy
+(diehard-async/defretrypolicy policy
   {:max-retries 5
    :backoff-ms [1000 10000]})
 
-(diehard/with-retry {:policy policy}
+(diehard-async/with-retry {:policy policy}
   ;; your code here
   )
 ```
@@ -282,11 +282,11 @@ You can put together all those retry policies in a `defretrypolicy`.
 And use `:policy` option in option map.
 
 ```clojure
-(diehard/defretrypolicy policy
+(diehard-async/defretrypolicy policy
   {:max-retries 5
    :backoff-ms [1000 10000]})
 
-(diehard/with-retry {:policy policy}
+(diehard-async/with-retry {:policy policy}
   ;; your code here
   )
 ```
@@ -418,12 +418,12 @@ retry block.
 (defmacro ^{:doc "Circuit breaker protected block.
 
 ```clj
-(require '[diehard.core :as diehard])
+(require '[diehard-async.core :as diehard])
 
-(diehard/defcircuitbreaker test-cb {:failure-threshold-ratio [35 50]
+(diehard-async/defcircuitbreaker test-cb {:failure-threshold-ratio [35 50]
                                     :delay-ms 1000})
 
-(diehard/with-circuit-breaker test-cb
+(diehard-async/with-circuit-breaker test-cb
   ;; your protected code here
   )
 ```
@@ -443,14 +443,14 @@ is open and skip execution of inner forms. Otherwise it will return the value
 or throw the exception raised from inner.
 
 You can always check circuit breaker state with
-`diehard.circuitbreaker/state`.
+`diehard-async.circuitbreaker/state`.
 "}
   with-circuit-breaker [cb & body]
   `(let [opts# (if-not (map? ~cb)
-                 {:circuitbreaker ~cb}
+                 {:circuit-breaker ~cb}
                  ~cb)
          fallback# (fallback opts#)
-         cb# (:circuitbreaker opts#)
+         cb# (:circuit-breaker opts#)
          async# (:async opts#)
 
          policies# (vec (filter some? [fallback# cb#]))
@@ -474,7 +474,7 @@ You can always check circuit breaker state with
 
      (try
        (condp = async#
-         :default (.getAsync ^FailsafeExecutor failsafe# ^CheckedSupplier supplier#)
+         :default   (.getAsync ^FailsafeExecutor failsafe# ^CheckedSupplier supplier#)
          :execution (.getAsyncExecution ^FailsafeExecutor failsafe# ^AsyncRunnable runnable#)
          (.get ^FailsafeExecutor failsafe# ^CheckedSupplier supplier#))
        (catch CircuitBreakerOpenException e#

@@ -18,7 +18,7 @@ A retry block will re-execute inner forms when retry criteria matches.
 
 ```clojure
 (require '[diehard-async.core :as dh])
-(dh/with-retry {:retry-on TimeoutException
+(dh/with-retry {:retry-on    TimeoutException
                 :max-retries 3}
   (fetch-data-from-the-moon))
 ```
@@ -32,16 +32,16 @@ execution if the open condition triggered.
 (require '[diehard-async.core :as dh])
 
 (defcircuitbreaker my-cb {:failure-threshold-ratio [8 10]
-                          :delay-ms 1000})
+                          :delay-ms                1000})
 
 (dh/with-circuit-breaker my-cb
   (fetch-data-from-the-moon))
 
-  (dh/with-circuit-breaker {:circuitbreaker my-cb :async :default}
-    (fetch-data-from-the-moon-asynchronously))
+(dh/with-circuit-breaker {:circuit-breaker my-cb :async :default}
+  (fetch-data-from-the-moon-asynchronously))
 
 (dh/with-circuit-breaker
-                {:circuitbreaker my-cb
+                {:circuit-breaker my-cb
                  :async          :execution}
                 (fn [^AsyncExecution execution]
                   (fetch-data-from-the-moon-asynchronously
