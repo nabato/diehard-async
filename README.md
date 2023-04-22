@@ -41,8 +41,7 @@ execution if the open condition triggered.
   (fetch-data-from-the-moon-asynchronously))
 
 (dh/with-circuit-breaker
-                {:circuit-breaker my-cb
-                 :async          :execution}
+                {:circuit-breaker my-cb :async :execution}
                 (fn [^AsyncExecution execution]
                   (fetch-data-from-the-moon-asynchronously
                            {:on-result         #(.recordResult execution %)
