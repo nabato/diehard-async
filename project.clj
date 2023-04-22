@@ -1,4 +1,4 @@
-(defproject org.clojars.vladislav/diehard-async "0.1.24"
+(defproject org.clojars.vladislav/diehard-async "0.1.25"
   :description "FIXME: write description"
   :url "https://github.com/vlnabatov/diehard-async"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
